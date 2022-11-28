@@ -3,9 +3,7 @@ const UserDados = require('../../dados/user')
 const User = new UserDados()
 
 class UserController {
-
   login({ request, response }) {
-
     const userList = User.getUsers();
     const { email } = request.body
 
@@ -19,16 +17,15 @@ class UserController {
 
   }
 
-  register({ request, response }) {
-    // const { name, lastname, displayName, age, phone, email, password, confirmPassword } = request.body
-    const { name } = request.body
-    User.registerUser({ name })
+  registerNewUser({ request, response }) {
+    const { name, lastname, displayName, age, phone, email, password, confirmPassword } = request.body
+    User.registerUser({ name, lastname, displayName, age, phone, email, password, confirmPassword })
 
 
     return response.json({ status: 201, message: 'Usuário cadastrado com sucesso!' })
   }
 
-  getUsers({ request, response }) {
+  getAllUsers({ request, response }) {
     const listUser = User.getUsers();
 
     if (listUser.length > 0) {
@@ -38,6 +35,36 @@ class UserController {
 
     return response.json({ status: 200, message: 'Não existe nenhum usuário', data: 'Users' })
 
+  }
+
+  deleteUser({ request, response }) {
+    const { name } = request.params;
+
+    const listUser = User.getUsers();
+    const userFiltered = listUser.filter(user => user.name === name)
+    if (userFiltered.length > 0) {
+      User.deleteUser(name)
+      return response.json({ status: 200, message: 'Usuário deletado com sucesso', data: userFiltered })
+    }
+    return response.json({ status: 400, message: 'Usuário não encontrado', data: null })
+  }
+
+  updateUser({ request, response }) {
+    const { nameUser } = request.params;
+    const { name, lastName } = request.body;
+
+    const listUser = User.getUsers();
+    const userFiltered = listUser.filter(user => user.name == nameUser)
+    const data = { name, lastName }
+
+    if (userFiltered.length > 0) {
+      const userUpdated = User.updateUser(nameUser, data)
+      return response.json({ status: 200, message: 'Usuário alterado com sucesso', data: userUpdated })
+
+    }
+    return response.json({
+      status: 400, message: 'Usuário não encontrado', data: null
+    })
   }
 }
 

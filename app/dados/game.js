@@ -1,18 +1,34 @@
 class GamesController {
   constructor() {
     this.games = [
-      {
-        id: '1',
-        name: 'Gabriel'
-      },
-
     ];
+
+    this.mediumGames = [
+    ]
+
+    this.filterGame = ({ name, category }) => {
+      const filteredGames = this.games.filter(game => game.name === name || game.category === category)
+
+      if (filteredGames.length > 0) {
+        return filteredGames
+      }
+
+      return []
+    }
 
     this.registerGame = (games) => {
       this.games.push(games)
     }
 
-    this.getGames = (games) => {
+    this.registerGameMediumGames = (games) => {
+      this.mediumGames.push(games)
+    }
+
+    this.getMediumGames = () => {
+      return this.mediumGames
+    }
+
+    this.getGames = () => {
       return this.games
     }
 
@@ -21,23 +37,37 @@ class GamesController {
       return this.games.filter(game => game.id === gameId)
     }
 
-    this.updateGame = (gameId, games) => {
+    this.updateGame = (authorGame, games) => {
+      const game = {}
       this.games = this.games.map(game => {
-        if (game.id === gameId) {
+        if (game.author === authorGame) {
+          game = { ...game, ...games }
           return {
-            ...item,
+            ...game,
             ...games,
 
           }
 
         }
-        return item
+
+        return {
+          ...game
+        }
       })
+
+      return game
 
     }
 
-    this.deleteGame = (gameId) => {
-      this.games = this.games.filter(game => game.id !== gameId)
+    this.deleteGame = (author) => {
+      const findGame = this.games.filter(game => game.author === author)
+
+      if (findGame.length) {
+        this.games = this.games.filter(game => game.author !== author)
+        return true
+      }
+
+      return false
     }
 
 
